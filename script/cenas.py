@@ -1,7 +1,6 @@
 import pygame, random
 from script.jogador import Player
 from script.ataque import Enemy
-
 class Fase:
     def __init__(self, screen, width, height):
         self.screen = screen
@@ -15,6 +14,8 @@ class Fase:
         self.clock = pygame.time.Clock()
         self.background = pygame.image.load("assets/fundo.png").convert()
         self.background = pygame.transform.scale(self.background, (width, height))
+        self.death_star = pygame.image.load("assets/estreladamorte.png").convert_alpha()
+        self.death_star = pygame.transform.scale(self.death_star, (300, 300))
 
     def jogar(self, nivel, username):
         running = True
@@ -49,6 +50,7 @@ class Fase:
 
             # Renderizar
             self.screen.blit(self.background, (0, 0))
+            self.screen.blit(self.death_star, (20, self.height // 2 - 50))
             self.all_sprites.draw(self.screen)
             pygame.display.flip()
             self.clock.tick(60)

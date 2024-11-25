@@ -1,4 +1,5 @@
 import pygame
+from script.ataque import Bullet
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
