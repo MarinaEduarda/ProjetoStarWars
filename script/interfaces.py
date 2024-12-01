@@ -52,8 +52,8 @@ class TelaGameOver:
             self.screen.blit(text, (self.width // 4, 50))
 
             # Opções para o jogador
-            option1 = font.render("Pressione R para Jogar Novamente", True, (255, 255, 255))
-            option2 = font.render("Pressione Q para Encerrar", True, (255, 255, 255))
+            option1 = font.render("Pressione J para Jogar Novamente", True, (255, 255, 255))
+            option2 = font.render("Pressione E para Encerrar", True, (255, 255, 255))
             self.screen.blit(option1, (self.width // 4, 150))
             self.screen.blit(option2, (self.width // 4, 200))
 
@@ -75,7 +75,7 @@ class TelaGameOver:
                     pygame.quit()
                     return False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:
+                    if event.key == pygame.K_j:
                         return True
-                    if event.key == pygame.K_q:
+                    if event.key == pygame.K_e:
                         return False

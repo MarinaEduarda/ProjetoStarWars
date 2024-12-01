@@ -1,5 +1,4 @@
 import pygame
-from script.ataque import Bullet
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -18,8 +17,3 @@ class Player(pygame.sprite.Sprite):
             self.speed_y = 5
         self.rect.y += self.speed_y
         self.rect.y = max(0, min(600 - self.rect.height, self.rect.y))
-
-    def shoot(self, bullets):
-        from ataque import Bullet
-        bullet = Bullet(self.rect.right, self.rect.centery)
-        bullets.add(bullet)

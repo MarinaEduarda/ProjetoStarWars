@@ -1,6 +1,8 @@
-import pygame, random
+import pygame
 from script.jogador import Player
-from script.ataque import Enemy
+from script.ataque import Enemy, atirar, detectar_colisoes
+
+
 class Fase:
     def __init__(self, screen, width, height):
         self.screen = screen
@@ -16,42 +18,44 @@ class Fase:
         self.background = pygame.transform.scale(self.background, (width, height))
         self.death_star = pygame.image.load("assets/estreladamorte.png").convert_alpha()
         self.death_star = pygame.transform.scale(self.death_star, (300, 300))
+        self.death_star_rect = self.death_star.get_rect(center=(150, height // 2))
 
     def jogar(self, nivel, username):
         running = True
         score = 0
-
-        # Configurações de inimigos por nível
         spawn_rate = {1: 2000, 2: 1500, 3: 1000}[nivel]
-        inimigo_tipo = {1: ["resistencia"], 2: ["millenium"], 3: ["resistencia", "millenium"]}[nivel]
         pygame.time.set_timer(pygame.USEREVENT, spawn_rate)
 
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    return "game_over", score
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    self.player.shoot(self.bullets)
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_t:  # Atira ao pressionar 'T'
+                        atirar(self.bullets, self.all_sprites, self.player)
                 if event.type == pygame.USEREVENT:
-                    tipo = random.choice(inimigo_tipo)
-                    enemy = Enemy(tipo)
+                    enemy = Enemy("resistencia")
                     self.all_sprites.add(enemy)
                     self.enemies.add(enemy)
 
-            # Atualizar
             self.all_sprites.update()
-            hits = pygame.sprite.groupcollide(self.enemies, self.bullets, True, True)
-            score += len(hits)
+            score += detectar_colisoes(self.bullets, self.enemies)  # Atualiza o placar com as colisões
 
             for enemy in self.enemies:
-                if enemy.rect.colliderect(self.player.rect):
+                if enemy.rect.colliderect(self.player.rect) or enemy.rect.colliderect(self.death_star_rect):
                     return "game_over", score
 
             # Renderizar
             self.screen.blit(self.background, (0, 0))
-            self.screen.blit(self.death_star, (20, self.height // 2 - 50))
+            self.screen.blit(self.death_star, self.death_star_rect.topleft)
             self.all_sprites.draw(self.screen)
+
+            # Exibir o placar
+            font = pygame.font.Font(None, 36)
+            score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+            self.screen.blit(score_text, (10, 10))
+
             pygame.display.flip()
             self.clock.tick(60)
 
