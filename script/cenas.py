@@ -1,6 +1,8 @@
 import pygame
+import random
 from script.jogador import Player
-from script.ataque import Enemy, atirar, detectar_colisoes
+from script.ataque import Enemy
+from script.ataque import atirar, detectar_colisoes
 
 
 class Fase:
@@ -19,14 +21,31 @@ class Fase:
         self.death_star = pygame.image.load("assets/estreladamorte.png").convert_alpha()
         self.death_star = pygame.transform.scale(self.death_star, (300, 300))
         self.death_star_rect = self.death_star.get_rect(center=(150, height // 2))
+        self.score = 0
+        self.enemy_speed = 2  # Inicial speed for enemies
+
+    def _alterar_fase(self):
+        """
+        Ajusta a dificuldade conforme o número de naves atingidas.
+        """
+        if self.score >= 20:
+            # Quando atingir 20 naves destruídas, aparecem ambas as naves e aumenta a velocidade
+            return ["resistencia", "millenium"], 4
+        elif self.score >= 10:
+            # Quando atingir 10 naves destruídas, muda a nave para 'millenium' e aumenta a velocidade
+            return ["millenium"], 3
+        else:
+            # Fase inicial com a nave 'resistencia'
+            return ["resistencia"], 2
 
     def jogar(self, nivel, username):
         running = True
-        score = 0
-        spawn_rate = {1: 2000, 2: 1500, 3: 1000}[nivel]
-        pygame.time.set_timer(pygame.USEREVENT, spawn_rate)
+        pygame.time.set_timer(pygame.USEREVENT, 1500)  # Ajuste o tempo de spawn de inimigos
 
         while running:
+            # Atualizar inimigos e velocidade com base na pontuação
+            inimigos_disponiveis, velocidade_inimigos = self._alterar_fase()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -35,16 +54,17 @@ class Fase:
                     if event.key == pygame.K_t:  # Atira ao pressionar 'T'
                         atirar(self.bullets, self.all_sprites, self.player)
                 if event.type == pygame.USEREVENT:
-                    enemy = Enemy("resistencia")
+                    tipo_inimigo = random.choice(inimigos_disponiveis)
+                    enemy = Enemy(tipo_inimigo, velocidade_inimigos)
                     self.all_sprites.add(enemy)
                     self.enemies.add(enemy)
 
             self.all_sprites.update()
-            score += detectar_colisoes(self.bullets, self.enemies)  # Atualiza o placar com as colisões
+            self.score += detectar_colisoes(self.bullets, self.enemies)  # Atualiza o placar com as colisões
 
             for enemy in self.enemies:
                 if enemy.rect.colliderect(self.player.rect) or enemy.rect.colliderect(self.death_star_rect):
-                    return "game_over", score
+                    return "game_over", self.score
 
             # Renderizar
             self.screen.blit(self.background, (0, 0))
@@ -53,10 +73,10 @@ class Fase:
 
             # Exibir o placar
             font = pygame.font.Font(None, 36)
-            score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+            score_text = font.render(f"Score: {self.score}", True, (255, 255, 255))
             self.screen.blit(score_text, (10, 10))
 
             pygame.display.flip()
             self.clock.tick(60)
 
-        return "proxima_fase", score
+        return "proxima_fase", self.score

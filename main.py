@@ -1,6 +1,6 @@
 import pygame
 from script.jogador import Player
-from script.ataque import Enemy, atirar, detectar_colisoes
+from script.ataque import Enemy
 from script.cenas import Fase
 from script.interfaces import TelaInicial, TelaGameOver
 

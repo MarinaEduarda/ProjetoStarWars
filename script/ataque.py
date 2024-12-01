@@ -3,22 +3,29 @@ import random
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, tipo):
+    def __init__(self, tipo, speed):
         """
-        Cria um inimigo do tipo especificado.
+        Cria um inimigo com base no tipo e na velocidade.
         """
         super().__init__()
         self.image = pygame.image.load(f"assets/{tipo}.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (50, 50))
+        
+        # Se for uma nave millenium, dobra seu tamanho
+        if tipo == "millenium":
+            self.image = pygame.transform.scale(self.image, (100, 100))  # Tamanho dobrado (100x100)
+        else:
+            self.image = pygame.transform.scale(self.image, (50, 50))  # Tamanho padrão (50x50)
+        
         self.rect = self.image.get_rect()
         self.rect.x = 800
         self.rect.y = random.randint(50, 550)
-        self.speed = random.randint(2, 4)
+        self.speed = speed
 
     def update(self):
         self.rect.x -= self.speed
         if self.rect.right < 0:
             self.kill()
+
 
 
 class Bullet(pygame.sprite.Sprite):
