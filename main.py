@@ -62,6 +62,7 @@ while True:
             jogando = tela_game_over.mostrar(username, score)
             if jogando:
                 fase_atual = 1  # Reinicia o jogo se o jogador decidir continuar
+                fase = Fase(screen, WIDTH, HEIGHT)
 
     if not jogando:  # Sai do jogo se o jogador não continuar
         break
