@@ -21,10 +21,13 @@ fase_atual = 1
 jogando = True
 ranking = {}
 
+# Nome do arquivo onde o ranking será salvo
+RANKING_FILE = "ranking.json"
+
 # Inicializar telas e fases
 tela_inicial = TelaInicial(screen, WIDTH, HEIGHT)
 fase = Fase(screen, WIDTH, HEIGHT)
-tela_game_over = TelaGameOver(screen, WIDTH, HEIGHT, ranking)
+tela_game_over = TelaGameOver(screen, WIDTH, HEIGHT, RANKING_FILE)
 
 # Loop principal
 while True:
